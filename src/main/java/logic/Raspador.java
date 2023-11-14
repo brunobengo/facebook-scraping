@@ -12,34 +12,61 @@ import org.openqa.selenium.manager.SeleniumManagerOutput;
 import org.openqa.selenium.remote.service.DriverFinder;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 
 public class Raspador {
 
-    public void execute(String url){
+    private FileWriter fileWriter;
+
+    public void execute(String url) throws IOException {
         System.out.println("Iniciando a busca por comentários...");
         WebDriver driver = new ChromeDriver(getChromeOptions());
 
         driver.get(url);
-        waitForIt(Configuracao.getWaitForClick());
+        waitForIt(5000);//Configuracao.getWaitForClick());
 
-//        processaLinkComentario(driver);
         processaLinkVerMais(driver);
         processaLinkDeRespostas(driver);
 
-        capturaComentarios(driver);
+        fileWriter = new FileWriter("resultados/raspagem-"+getLocalDateTimeFormatado()+".csv");
+        capturaComentarioTotal(driver);
 
+        fileWriter.close();
         driver.quit();
     }
+    private void capturaComentarioTotal(WebDriver driver) throws IOException {
+        List<WebElement> webElement = driver.findElements(By.xpath(Configuracao.getXPathExpressionComentarioTotal()));
+        for(int i = 0; i < webElement.size(); i++){
+            String[] vetorNomeComentarioAno = webElement.get(i).getText().split("\n");
+            if(vetorNomeComentarioAno.length >= 3){
+                String nome = vetorNomeComentarioAno[0];
 
-    private static void capturaComentarios(WebDriver driver) {
-        List<WebElement> webElementsComentarios = driver.findElements(By.xpath(Configuracao.getXPathExpressionComentarios()));
-        for(int i = 0; i < webElementsComentarios.size(); i++){
-            System.out.println(webElementsComentarios.get(i).getText());
+                int posicaoAno = vetorNomeComentarioAno.length-1;
+                boolean comentarioContemLikes = vetorNomeComentarioAno[posicaoAno].trim().split(" ").length == 1; //quando o comentario tem like, o numero de likes compoem o webElement
+                if(comentarioContemLikes) posicaoAno--;
+                String distanciaDoDiaDaRaspagem = vetorNomeComentarioAno[posicaoAno];
+
+                String comentario = "";
+                for(int a = 1; a < posicaoAno; comentario += vetorNomeComentarioAno[a] + " ", a++);
+
+                String registroComentario = getLocalDateTimeFormatado() + ";" + nome + ";" + distanciaDoDiaDaRaspagem + ";" + comentario + ";" + driver.getCurrentUrl();
+                fileWriter.write(registroComentario + "\n");
+                System.out.println(registroComentario);
+            }
         }
-        System.out.println(webElementsComentarios.size() + " comentários ");
     }
+
+    private String getLocalDateTimeFormatado(){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd-H-mm-ss"));
+    }
+
 
     private void processaLinkDeRespostas(WebDriver driver) {
         JavascriptExecutor js;

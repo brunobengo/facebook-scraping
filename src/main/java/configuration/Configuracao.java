@@ -36,4 +36,11 @@ public class Configuracao {
     public static int getWaitForRenderUrl() {
         return (int) ((Map<String, Object>) configuracao.get("facebook")).get("wait-for-render-url");
     }
+
+    public static String getXPathExpressionComentarioENomeDeUsuarios() {
+        return (String) ((Map<String, Object>) configuracao.get("facebook")).get("xpathExpression-comentario-e-nome-de-usuarios");
+    }
+    public static String getXPathExpressionComentarioTotal() {
+        return (String) ((Map<String, Object>) configuracao.get("facebook")).get("xpathExpression-comentario-total");
+    }
 }
