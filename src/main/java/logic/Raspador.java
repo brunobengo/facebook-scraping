@@ -18,11 +18,13 @@ import java.util.List;
 public class Raspador {
 
     public void execute(String url){
+        System.out.println("Iniciando a busca por comentários...");
         WebDriver driver = new ChromeDriver(getChromeOptions());
 
         driver.get(url);
-        waitForIt(3000);
+        waitForIt(Configuracao.getWaitForRenderUrl());
 
+//        processaLinkComentario(driver);
         processaLinkVerMais(driver);
         processaLinkDeRespostas(driver);
 
@@ -30,6 +32,24 @@ public class Raspador {
 
         driver.quit();
     }
+
+    private void processaLinkComentario(WebDriver driver) {
+        JavascriptExecutor js;
+        WebElement webElementMaisRespostas = null;
+        try {
+            webElementMaisRespostas = driver.findElement(By.xpath("//span[contains(text(), ' comentário')]"));
+        }catch (Exception e){}
+        js = (JavascriptExecutor) driver;
+        while(webElementMaisRespostas != null){
+            js.executeScript("arguments[0].click();", webElementMaisRespostas);
+            waitForIt(Configuracao.getWaitForRenderUrl());
+            webElementMaisRespostas = null;
+            try {
+                webElementMaisRespostas = driver.findElement(By.xpath("//span[contains(text(), ' comentário')]"));
+            }catch (Exception e){}
+        }
+    }
+
     private static void capturaComentarios(WebDriver driver) {
         List<WebElement> webElementsComentarios = driver.findElements(By.xpath(Configuracao.getXPathExpressionComentarios()));
         for(int i = 0; i < webElementsComentarios.size(); i++){
@@ -47,7 +67,7 @@ public class Raspador {
         js = (JavascriptExecutor) driver;
         while(webElementMaisRespostas != null){
             js.executeScript("arguments[0].click();", webElementMaisRespostas);
-            waitForIt(500);
+            waitForIt(Configuracao.getWaitForRenderUrl());
             webElementMaisRespostas = null;
             try {
                 webElementMaisRespostas = driver.findElement(By.xpath(Configuracao.getXPathExpressionRespostas()));
@@ -63,7 +83,7 @@ public class Raspador {
         }catch (Exception e){}
         while(webElementVerMais != null){
             js.executeScript("arguments[0].click();", webElementVerMais);
-            waitForIt(500);
+            waitForIt(Configuracao.getWaitForRenderUrl());
             webElementVerMais = null;
             try {
                 webElementVerMais = driver.findElement(By.xpath(Configuracao.getXPathExpressionVerMais()));

@@ -2,3 +2,5 @@ facebook:
   xpathExpression-comentarios: //div[@class="xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs"]
   xpathExpression-ver-mais: //span[contains(text(), 'Ver mais ')] #Array.from(document.querySelectorAll('span')).find(el => el.textContent.contains('Ver mais ')).click()
   xpathExpression-respostas: //span[contains(text(), ' respostas')]
+  wait-for-click: 500
+  wait-for-render-url: 1500

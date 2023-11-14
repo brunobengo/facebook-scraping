@@ -30,4 +30,10 @@ public class Configuracao {
     public static String getXPathExpressionRespostas() {
         return (String) ((Map<String, Object>) configuracao.get("facebook")).get("xpathExpression-respostas");
     }
+    public static int getWaitForClick() {
+        return (int) ((Map<String, Object>) configuracao.get("facebook")).get("wait-for-click");
+    }
+    public static int getWaitForRenderUrl() {
+        return (int) ((Map<String, Object>) configuracao.get("facebook")).get("wait-for-render-url");
+    }
 }
