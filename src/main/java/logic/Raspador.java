@@ -22,7 +22,7 @@ public class Raspador {
         WebDriver driver = new ChromeDriver(getChromeOptions());
 
         driver.get(url);
-        waitForIt(Configuracao.getWaitForRenderUrl());
+        waitForIt(Configuracao.getWaitForClick());
 
 //        processaLinkComentario(driver);
         processaLinkVerMais(driver);
@@ -31,23 +31,6 @@ public class Raspador {
         capturaComentarios(driver);
 
         driver.quit();
-    }
-
-    private void processaLinkComentario(WebDriver driver) {
-        JavascriptExecutor js;
-        WebElement webElementMaisRespostas = null;
-        try {
-            webElementMaisRespostas = driver.findElement(By.xpath("//span[contains(text(), ' comentário')]"));
-        }catch (Exception e){}
-        js = (JavascriptExecutor) driver;
-        while(webElementMaisRespostas != null){
-            js.executeScript("arguments[0].click();", webElementMaisRespostas);
-            waitForIt(Configuracao.getWaitForRenderUrl());
-            webElementMaisRespostas = null;
-            try {
-                webElementMaisRespostas = driver.findElement(By.xpath("//span[contains(text(), ' comentário')]"));
-            }catch (Exception e){}
-        }
     }
 
     private static void capturaComentarios(WebDriver driver) {
