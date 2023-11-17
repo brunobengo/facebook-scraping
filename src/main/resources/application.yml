@@ -1,10 +1,7 @@
 facebook:
-  wait-for-render-url: 1500
-  wait-for-click: 700
-  xpathExpression-comentarios: //div[@class="xdj266r x11i5rnm xat24cr x1mh8g0r x1vvkbs"]
-  xpathExpression-ver-mais: //span[contains(text(), 'Ver mais ')] #Array.from(document.querySelectorAll('span')).find(el => el.textContent.contains('Ver mais ')).click()
-  xpathExpression-respostas: //span[contains(text(), ' respostas')]
-  xpathExpression-comentario-e-nome-de-usuarios: //div[@class="x1y1aw1k xn6708d xwib8y2 x1ye3gou"]
-  xpathExpression-comentario-total: //div[@class="x1r8uery x1iyjqo2 x6ikm8r x10wlt62 x1pi30zi"]
-  xpathExpression-tempo-a-partir-da-raspagem: //span[@class="x4k7w5x x1h91t0o x1h9r5lt x1jfb8zj xv2umb2 x1beo9mf xaigb6o x12ejxvf x3igimt xarpa2k xedcshv x1lytzrv x1t2pt76 x7ja8zs x1qrby5j"]
-  #//span[@class="x3nfvp2"] apenas o nome do usuário
+  wait-for-render-url: 4000
+  wait-for-click: 2000
+  nro-execucoes-ver-mais: 10
+  xpathExpression-link-ver-mais: //span[contains(text(), 'Ver mais ')] #Array.from(document.querySelectorAll('span')).find(el => el.textContent.contains('Ver mais ')).click()
+  xpathExpression-link-respostas: //span[contains(text(), ' respostas')]
+  xpathExpression-div-comentarioCompleto: //div[@class="x1r8uery x1iyjqo2 x6ikm8r x10wlt62 x1pi30zi"]

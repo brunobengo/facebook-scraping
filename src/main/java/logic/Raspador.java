@@ -1,6 +1,6 @@
 package logic;
 
-import configuration.Configuracao;
+import configuration.Configuration;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -14,7 +14,6 @@ import org.openqa.selenium.remote.service.DriverFinder;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -29,10 +28,12 @@ public class Raspador {
         WebDriver driver = new ChromeDriver(getChromeOptions());
 
         driver.get(url);
-        waitForIt(5000);//Configuracao.getWaitForClick());
+        waitForIt(Configuration.getWaitForRenderUrl());
 
-        processaLinkVerMais(driver);
-        processaLinkDeRespostas(driver);
+        for(int i = 0; i < Configuration.getNroExecucoesVerMais(); i++){
+            processaLinkByExpression(driver, Configuration.getXPathExpressionLinkVerMais());
+        }
+        processaLinkByExpression(driver, Configuration.getXPathExpressionLinkRespostas());
 
         fileWriter = new FileWriter("resultados/raspagem-"+getLocalDateTimeFormatado()+".csv");
         capturaComentarioTotal(driver);
@@ -40,8 +41,21 @@ public class Raspador {
         fileWriter.close();
         driver.quit();
     }
+
+    private void processaLinkByExpression(WebDriver driver, String xPathExpression) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        try {
+            List<WebElement> listwebElements = driver.findElements(By.xpath(xPathExpression));
+            listwebElements.forEach(webElement -> {
+                js.executeScript("arguments[0].click();", webElement);
+                waitForIt(Configuration.getWaitForClick());
+            });
+
+        }catch (Exception e){}
+    }
+
     private void capturaComentarioTotal(WebDriver driver) throws IOException {
-        List<WebElement> webElement = driver.findElements(By.xpath(Configuracao.getXPathExpressionComentarioTotal()));
+        List<WebElement> webElement = driver.findElements(By.xpath(Configuration.getXPathExpressionDivComentarioCompleto()));
         for(int i = 0; i < webElement.size(); i++){
             String[] vetorNomeComentarioAno = webElement.get(i).getText().split("\n");
             if(vetorNomeComentarioAno.length >= 3){
@@ -68,38 +82,6 @@ public class Raspador {
     }
 
 
-    private void processaLinkDeRespostas(WebDriver driver) {
-        JavascriptExecutor js;
-        WebElement webElementMaisRespostas = null;
-        try {
-            webElementMaisRespostas = driver.findElement(By.xpath(Configuracao.getXPathExpressionRespostas()));
-        }catch (Exception e){}
-        js = (JavascriptExecutor) driver;
-        while(webElementMaisRespostas != null){
-            js.executeScript("arguments[0].click();", webElementMaisRespostas);
-            waitForIt(Configuracao.getWaitForRenderUrl());
-            webElementMaisRespostas = null;
-            try {
-                webElementMaisRespostas = driver.findElement(By.xpath(Configuracao.getXPathExpressionRespostas()));
-            }catch (Exception e){}
-        }
-    }
-
-    private void processaLinkVerMais(WebDriver driver) {
-        WebElement webElementVerMais = null;
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        try {
-            webElementVerMais = driver.findElement(By.xpath(Configuracao.getXPathExpressionVerMais()));
-        }catch (Exception e){}
-        while(webElementVerMais != null){
-            js.executeScript("arguments[0].click();", webElementVerMais);
-            waitForIt(Configuracao.getWaitForRenderUrl());
-            webElementVerMais = null;
-            try {
-                webElementVerMais = driver.findElement(By.xpath(Configuracao.getXPathExpressionVerMais()));
-            }catch (Exception e){}
-        }
-    }
 
     private ChromeOptions getChromeOptions() {
         ChromeOptions options = new ChromeOptions();
